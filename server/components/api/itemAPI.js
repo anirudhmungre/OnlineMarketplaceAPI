@@ -1,12 +1,10 @@
-const express = require('express');
-const graphqlHTTP = require('express-graphql');
 const { buildSchema } = require('graphql');
-const Item = require(__dirname + '/item')
+const Item = require('../objects/item')
 
 let items = [];
 let itemId = 0;
 
-// Construct a schema, using GraphQL schema language
+// Item Schema
 let itemSchema = buildSchema(`
     type Item{
         itemId: Int, 
@@ -49,20 +47,28 @@ let itemRoot = {
         }
         return true;
     },
-    addItem: ({ itemId }) => {
+    addItem: ({ itemId , quantity = 1}) => {
         try {
-            items[itemId].add();
+            quantity = parseInt(quantity);
+            if (quantity < 0){
+                throw new Error ("Cannot add a negative number of items!");
+            }
+            items[itemId].add(quantity);
         } catch (err) {
             console.error(err);
             return false;
         }
         return true;
     },
-    removeItem: ({ itemId }) => {
+    removeItem: ({ itemId, quantity = 1 }) => {
         try {
+            quantity = parseInt(quantity);
             for (let i = 0; i < items.length; i++){
                 if (items[i].itemId === itemId){
-                    items[itemId].remove();
+                    if (items[itemId].inventory_count - quantity < 0){
+                        throw new Error (quantity + " items not available to remove!");
+                    }
+                    items[itemId].remove(quantity);
                     return true;
                 }
             }
@@ -73,40 +79,4 @@ let itemRoot = {
     }
 };
 
-let app = express();
-app.use('/graphql', graphqlHTTP({
-  schema: itemSchema,
-  rootValue: itemRoot,
-  graphiql: true
-}));
-
-// Item API Endpoints
-app.post('/allItems', graphqlHTTP({
-    schema: itemSchema,
-    rootValue: itemRoot,
-    graphiql: false
-}));
-
-app.post('/newItem', graphqlHTTP({
-    schema: itemSchema,
-    rootValue: itemRoot,
-    graphiql: false
-}));
-
-app.post('/addItem', graphqlHTTP({
-    schema: itemSchema,
-    rootValue: itemRoot,
-    graphiql: false
-}));
-
-app.post('/removeItem', graphqlHTTP({
-    schema: itemSchema,
-    rootValue: itemRoot,
-    graphiql: false
-}));
-
-// Cart API Endpoints
-
-
-app.listen(5000);
-console.log('Running a GraphQL API server at localhost:5000/graphql');
+module.exports = { itemSchema, itemRoot };

@@ -5,8 +5,8 @@ class Item{
         this.inventory_count = q;
     }
 
-    add(){
-        this.inventory_count++;
+    add(x){
+        this.inventory_count += x;
     }
 
     remove(){
