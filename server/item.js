@@ -1,19 +1,19 @@
 class Item{
-    constructor(itemId, itemName, quantity){
-        this.itemId = itemId;
-        this.itemName = itemName;
-        this.quantity = quantity;
+    constructor(id, name, q){
+        this.itemId = id;
+        this.title = name;
+        this.inventory_count = q;
     }
 
     add(){
-        this.quantity++;
+        this.inventory_count++;
     }
 
     remove(){
-        if (!this.quantity){
+        if (!this.inventory_count){
             throw new Error("Already 0 items");
         }
-        this.quantity--;
+        this.inventory_count--;
     }
 }
 

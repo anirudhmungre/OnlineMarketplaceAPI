@@ -3,30 +3,31 @@ const graphqlHTTP = require('express-graphql');
 const { buildSchema } = require('graphql');
 const Item = require(__dirname + '/item')
 
-var items = [];
+let items = [];
+let itemId = 0;
 
 // Construct a schema, using GraphQL schema language
-let schema = buildSchema(`
-  type Item{
-    itemID: Int, 
-    itemName: String, 
-    quantity: Int
-  }
-  type Query {
-    newItem(itemName: String, quantity: Int!): Boolean,
-    allItems(onlyAvail: Boolean): [Item],
-    addItem(itemId: Int!): Boolean,
-    removeItem(itemId: Int!): Boolean
-  }
+let itemSchema = buildSchema(`
+    type Item{
+        itemId: Int, 
+        title: String, 
+        inventory_count: Int
+    }
+    type Query {
+        newItem(title: String, inventory_count: Int!): Boolean,
+        allItems(onlyAvail: Boolean): [Item],
+        addItem(itemId: Int!): Boolean,
+        removeItem(itemId: Int!): Boolean
+    }
 `);
 
 // The root provides a resolver function for each API endpoint
-let root = {
-    allItems: ({onlyAvail = false}) => {
+let itemRoot = {
+    allItems: ({ onlyAvail = false }) => {
         if(onlyAvail){
             let avail = [];
             items.forEach(item => {
-                if (item.quantity > 0){
+                if (item.inventory_count > 0){
                     avail.push(item);
                 }
             });
@@ -34,16 +35,21 @@ let root = {
         }
         return items;
     },
-    newItem: ({ itemName, quantity }) => {
+    newItem: ({ title, inventory_count }) => {
         try {
-            items.push(new Item(items.length, itemName, quantity));
+            inventory_count = parseInt(inventory_count);
+            if (inventory_count < 0){
+                throw new Error ("Negative inventory count not allowed!");
+            }
+            items.push(new Item(itemId, title, inventory_count));
+            itemId++;
         } catch (err) {
             console.error(err);
             return false;
         }
         return true;
     },
-    addItem: (itemId) => {
+    addItem: ({ itemId }) => {
         try {
             items[itemId].add();
         } catch (err) {
@@ -52,47 +58,55 @@ let root = {
         }
         return true;
     },
-    removeItem: (itemId) => {
+    removeItem: ({ itemId }) => {
         try {
-            items[itemId].remove();
+            for (let i = 0; i < items.length; i++){
+                if (items[i].itemId === itemId){
+                    items[itemId].remove();
+                    return true;
+                }
+            }
         } catch (err) {
             console.error(err);
             return false;
         }
-        return true;
     }
 };
 
 let app = express();
 app.use('/graphql', graphqlHTTP({
-  schema: schema,
-  rootValue: root,
+  schema: itemSchema,
+  rootValue: itemRoot,
   graphiql: true
 }));
 
+// Item API Endpoints
 app.post('/allItems', graphqlHTTP({
-    schema: schema,
-    rootValue: root,
+    schema: itemSchema,
+    rootValue: itemRoot,
     graphiql: false
 }));
 
 app.post('/newItem', graphqlHTTP({
-    schema: schema,
-    rootValue: root,
+    schema: itemSchema,
+    rootValue: itemRoot,
     graphiql: false
 }));
 
 app.post('/addItem', graphqlHTTP({
-    schema: schema,
-    rootValue: root,
+    schema: itemSchema,
+    rootValue: itemRoot,
     graphiql: false
 }));
 
 app.post('/removeItem', graphqlHTTP({
-    schema: schema,
-    rootValue: root,
+    schema: itemSchema,
+    rootValue: itemRoot,
     graphiql: false
 }));
+
+// Cart API Endpoints
+
 
 app.listen(5000);
 console.log('Running a GraphQL API server at localhost:5000/graphql');
