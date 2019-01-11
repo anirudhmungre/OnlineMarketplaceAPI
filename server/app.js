@@ -1,36 +1,36 @@
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
-const { itemSchema, itemRoot } = require(__dirname + '/components/api/itemAPI');
+const { item_schema, item_root } = require(__dirname + '/components/api/itemAPI');
 
 let app = express();
 app.use('/graphql', graphqlHTTP({
-  schema: itemSchema,
-  rootValue: itemRoot,
+  schema: item_schema,
+  rootValue: item_root,
   graphiql: true
 }));
 
 // Item API Endpoints
 app.post('/allItems', graphqlHTTP({
-    schema: itemSchema,
-    rootValue: itemRoot,
+    schema: item_schema,
+    rootValue: item_root,
     graphiql: false
 }));
 
 app.post('/newItem', graphqlHTTP({
-    schema: itemSchema,
-    rootValue: itemRoot,
+    schema: item_schema,
+    rootValue: item_root,
     graphiql: false
 }));
 
 app.post('/addItem', graphqlHTTP({
-    schema: itemSchema,
-    rootValue: itemRoot,
+    schema: item_schema,
+    rootValue: item_root,
     graphiql: false
 }));
 
 app.post('/removeItem', graphqlHTTP({
-    schema: itemSchema,
-    rootValue: itemRoot,
+    schema: item_schema,
+    rootValue: item_root,
     graphiql: false
 }));
 

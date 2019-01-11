@@ -1,7 +1,8 @@
 class Item{
-    constructor(id, name, q){
-        this.itemId = id;
+    constructor(id, name, price, q){
+        this.item_id = id;
         this.title = name;
+        this.price = price;
         this.inventory_count = q;
     }
 
@@ -9,11 +10,11 @@ class Item{
         this.inventory_count += x;
     }
 
-    remove(){
-        if (!this.inventory_count){
-            throw new Error("Already 0 items");
+    remove(x){
+        if (this.inventory_count - x < 0){
+            throw new Error("Cannot remove " + x + " items. Total below 0!");
         }
-        this.inventory_count--;
+        this.inventory_count -= x;
     }
 }
 

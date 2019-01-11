@@ -1,28 +1,34 @@
 const { buildSchema } = require('graphql');
-const Item = require('../objects/item')
+const Item = require('../objects/item');
+const Money = require('../objects/money');
 
 let items = [];
-let itemId = 0;
+let item_id = 0;
 
 // Item Schema
-let itemSchema = buildSchema(`
+let item_schema = buildSchema(`
+    type Money{
+        dollar: Int,
+        cent: Int
+    }
     type Item{
-        itemId: Int, 
+        item_id: Int, 
         title: String, 
+        price: Money,
         inventory_count: Int
     }
     type Query {
-        newItem(title: String, inventory_count: Int!): Boolean,
-        allItems(onlyAvail: Boolean): [Item],
-        addItem(itemId: Int!): Boolean,
-        removeItem(itemId: Int!): Boolean
+        newItem(title: String, amount: String, inventory_count: Int!): Boolean,
+        allItems(only_avail: Boolean): [Item],
+        addItem(item_id: Int!): Boolean,
+        removeItem(item_id: Int!, quantity: Int): Boolean
     }
 `);
 
 // The root provides a resolver function for each API endpoint
-let itemRoot = {
-    allItems: ({ onlyAvail = false }) => {
-        if(onlyAvail){
+let item_root = {
+    allItems: ({ only_avail = false }) => {
+        if(only_avail){
             let avail = [];
             items.forEach(item => {
                 if (item.inventory_count > 0){
@@ -33,42 +39,44 @@ let itemRoot = {
         }
         return items;
     },
-    newItem: ({ title, inventory_count }) => {
+    newItem: ({ title, amount, inventory_count }) => {
         try {
+            let price = new Money(amount);
             inventory_count = parseInt(inventory_count);
             if (inventory_count < 0){
                 throw new Error ("Negative inventory count not allowed!");
             }
-            items.push(new Item(itemId, title, inventory_count));
-            itemId++;
+            items.push(new Item(item_id, title, price, inventory_count));
+            item_id++;
+            delete price;
         } catch (err) {
             console.error(err);
             return false;
         }
         return true;
     },
-    addItem: ({ itemId , quantity = 1}) => {
+    addItem: ({ item_id , quantity = 1}) => {
         try {
             quantity = parseInt(quantity);
             if (quantity < 0){
                 throw new Error ("Cannot add a negative number of items!");
             }
-            items[itemId].add(quantity);
+            items[item_id].add(quantity);
         } catch (err) {
             console.error(err);
             return false;
         }
         return true;
     },
-    removeItem: ({ itemId, quantity = 1 }) => {
+    removeItem: ({ item_id, quantity = 1 }) => {
         try {
             quantity = parseInt(quantity);
             for (let i = 0; i < items.length; i++){
-                if (items[i].itemId === itemId){
-                    if (items[itemId].inventory_count - quantity < 0){
-                        throw new Error (quantity + " items not available to remove!");
-                    }
-                    items[itemId].remove(quantity);
+                if (items[i].item_id === item_id){
+                    // if (items[item_id].inventory_count - quantity < 0){
+                    //     throw new Error (quantity + " items not available to remove!");
+                    // }
+                    items[item_id].remove(quantity);
                     return true;
                 }
             }
@@ -79,4 +87,4 @@ let itemRoot = {
     }
 };
 
-module.exports = { itemSchema, itemRoot };
+module.exports = { item_schema, item_root };
