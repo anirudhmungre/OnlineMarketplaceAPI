@@ -5,7 +5,7 @@ class Money{
         this.cent = parseInt(money[1]);
     }
     splitCurr(amount){
-        let re = new RegExp('([0-9]+)\.([0-9][0-9])$');
+        let re = new RegExp('^([0-9]+)\.([0-9][0-9])$');
         if(!re.test(amount)){
             throw new Error("Invalid amount pattern! Please only enter a number with pattern '([0-9]+)\.([0-9][0-9])'");
         }

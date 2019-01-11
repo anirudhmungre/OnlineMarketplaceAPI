@@ -1,6 +1,7 @@
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
-const { item_schema, item_root } = require(__dirname + '/components/api/itemAPI');
+const items = require('./routes/itemRoute');
+const { item_schema, item_root } = require('./components/api/itemAPI');
 
 let app = express();
 app.use('/graphql', graphqlHTTP({
@@ -9,30 +10,7 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true
 }));
 
-// Item API Endpoints
-app.post('/allItems', graphqlHTTP({
-    schema: item_schema,
-    rootValue: item_root,
-    graphiql: false
-}));
-
-app.post('/newItem', graphqlHTTP({
-    schema: item_schema,
-    rootValue: item_root,
-    graphiql: false
-}));
-
-app.post('/addItem', graphqlHTTP({
-    schema: item_schema,
-    rootValue: item_root,
-    graphiql: false
-}));
-
-app.post('/removeItem', graphqlHTTP({
-    schema: item_schema,
-    rootValue: item_root,
-    graphiql: false
-}));
+app.use('/items', items);
 
 // Cart API Endpoints
 
