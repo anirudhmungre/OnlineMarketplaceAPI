@@ -73,9 +73,6 @@ let item_root = {
             quantity = parseInt(quantity);
             for (let i = 0; i < items.length; i++){
                 if (items[i].item_id === item_id){
-                    // if (items[item_id].inventory_count - quantity < 0){
-                    //     throw new Error (quantity + " items not available to remove!");
-                    // }
                     items[item_id].remove(quantity);
                     return true;
                 }

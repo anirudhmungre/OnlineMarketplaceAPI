@@ -12,8 +12,6 @@ app.use('/graphql', graphqlHTTP({
 
 app.use('/items', items);
 
-// Cart API Endpoints
-
 
 app.listen(5000);
 console.log('Running a GraphQL API server at localhost:5000/graphql');
