@@ -2,8 +2,8 @@ const { buildSchema } = require('graphql');
 const Item = require('../objects/item');
 const Money = require('../objects/money');
 
-let items = [];
-let item_id = 0;
+var items = [];
+let i_id = 0;
 
 // Item Schema
 let item_schema = buildSchema(`
@@ -28,10 +28,10 @@ let item_schema = buildSchema(`
 // The root provides a resolver function for each API endpoint
 let item_root = {
     allItems: ({ only_avail = false }) => {
-        if(only_avail){
+        if (only_avail) {
             let avail = [];
             items.forEach(item => {
-                if (item.inventory_count > 0){
+                if (item.inventory_count > 0) {
                     avail.push(item);
                 }
             });
@@ -43,11 +43,11 @@ let item_root = {
         try {
             let price = new Money(amount);
             inventory_count = parseInt(inventory_count);
-            if (inventory_count < 0){
-                throw new Error ("Negative inventory count not allowed!");
+            if (inventory_count < 0) {
+                throw new Error("Negative inventory count not allowed!");
             }
-            items.push(new Item(item_id, title, price, inventory_count));
-            item_id++;
+            items.push(new Item(i_id, title, price, inventory_count));
+            i_id++;
             delete price;
         } catch (err) {
             console.error(err);
@@ -55,11 +55,11 @@ let item_root = {
         }
         return true;
     },
-    addItem: ({ item_id , quantity = 1}) => {
+    addItem: ({ item_id, quantity = 1 }) => {
         try {
             quantity = parseInt(quantity);
-            if (quantity < 0){
-                throw new Error ("Cannot add a negative number of items!");
+            if (quantity < 0) {
+                throw new Error("Cannot add a negative number of items!");
             }
             items[item_id].add(quantity);
         } catch (err) {
@@ -71,8 +71,8 @@ let item_root = {
     removeItem: ({ item_id, quantity = 1 }) => {
         try {
             quantity = parseInt(quantity);
-            for (let i = 0; i < items.length; i++){
-                if (items[i].item_id === item_id){
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].item_id === item_id) {
                     items[item_id].remove(quantity);
                     return true;
                 }
