@@ -1,0 +1,14 @@
+type Item{
+    item_id: Int, 
+    title: String, 
+    price: Money,
+    inventory_count: Int
+}
+type Query {
+    allItems(only_avail: Boolean): [Item],
+}
+type Mutation {
+    newItem(title: String, amount: String, inventory_count: Int!): Boolean,
+    addItem(item_id: Int!): Boolean,
+    removeItem(item_id: Int!, quantity: Int): Boolean
+}

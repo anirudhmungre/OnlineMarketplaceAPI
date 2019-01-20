@@ -1,0 +1,13 @@
+type Cart{
+    cart_id: Int,
+    cart_items: [Item],
+    total: Money
+}
+type Query {
+    newCart: Cart,
+    cartItems(cart_id: Int!): [Item]
+}
+type Mutation {
+    addToCart(cart_id: Int!, item_id: Int!, quantity: Int): Boolean,
+    removeFromCart(cart_id: Int!, item_id: Int!, quantity: Int): Boolean
+}
