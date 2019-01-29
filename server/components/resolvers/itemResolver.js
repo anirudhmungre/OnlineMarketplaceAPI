@@ -1,7 +1,10 @@
+const Money = require('../objects/money');
+const Item = require('../objects/item');
+
 var items = [];
 let i_id = 0;
 
-export default {
+module.exports =  {
     // Query
     allItems: ({ only_avail = false }) => {
         if (only_avail) {
@@ -17,14 +20,14 @@ export default {
     },
 
     // Mutations
-    newItem: ({ title, amount, inventory_count }) => {
+    newItem: ({ title, amount, inventory_count: quantity = 1 }) => {
         try {
             let price = new Money(amount);
-            inventory_count = parseInt(inventory_count);
-            if (inventory_count < 0) {
-                throw new Error("Negative inventory count not allowed!");
+            quantity = parseInt(quantity);
+            if (quantity < 0) {
+                throw new Error("Negative quantity not allowed!");
             }
-            items.push(new Item(i_id, title, price, inventory_count));
+            items.push(new Item(i_id, title, price, quantity));
             i_id++;
             delete price;
         } catch (err) {

@@ -5,9 +5,7 @@ type Cart{
 }
 type Query {
     newCart: Cart,
-    cartItems(cart_id: Int!): [Item]
-}
-type Mutation {
+    cartItems(cart_id: Int!): [Item],
     addToCart(cart_id: Int!, item_id: Int!, quantity: Int): Boolean,
     removeFromCart(cart_id: Int!, item_id: Int!, quantity: Int): Boolean
 }

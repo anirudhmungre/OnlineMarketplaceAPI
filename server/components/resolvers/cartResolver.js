@@ -1,7 +1,9 @@
-var carts = [];
+const Cart = require('../objects/cart');
+
+let carts = [];
 let c_id = 0;
 
-export default {
+module.exports = {
     // Query
     newCart: () => {
         carts.push(new Cart(c_id));

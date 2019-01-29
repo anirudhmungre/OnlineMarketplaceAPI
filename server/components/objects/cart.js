@@ -1,3 +1,5 @@
+const Money = require('./money');
+
 class Cart {
     constructor(id) {
         this.cart_id = id;

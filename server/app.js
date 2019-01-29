@@ -1,29 +1,24 @@
+// var { items, carts } = require('./globals');
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
-const items = require('./routes/itemRoute');
-const carts = require('./routes/cartRoute');
-// const { item_schema, item_root } = require('./components/api/itemAPI');
+const { buildSchema } = require('graphql');
+const item_route = require('./routes/itemRoute');
+const cart_route = require('./routes/cartRoute');
 
 const merged_types = require('./components/typeDefs');
+const merged_resolvers = require('./components/resolverDefs');
 
-const item_resolver = require('./components/resolvers/itemResolver');
-const cart_resolver = require('./components/resolvers/cartResolver');
-
-
-const merged_resolvers = mergeResolvers([
-  item_resolver,
-  cart_resolver
-]);
+const schema = buildSchema(merged_types);
 
 let app = express();
 app.use('/graphql', graphqlHTTP({
-  schema: merged_types,
+  schema: schema,
   rootValue: merged_resolvers,
   graphiql: true
 }));
 
-app.use('/items', items);
-app.use('/carts', carts);
+app.use('/items', item_route);
+app.use('/carts', cart_route);
 
 
 app.listen(5000);
